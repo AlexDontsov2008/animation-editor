@@ -1,33 +1,19 @@
 #include <Application.hpp>
 #include <InitialParametrs.hpp>
 #include <Utility.hpp>
-#include <SceneNode.hpp>
-#include <Point.hpp>
 
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/ContextSettings.hpp>
+
+#include <iostream>
+#include <array>
 
 namespace Editor
 {
     Application::Application()
-    : mWindow(sf::VideoMode(windowWidth, windowHeight), windowName)
-    , mElements{}
-    {
-        init();
-    }
-
-    void Application::init()
-    {
-        std::unique_ptr<SceneNode> aPoint{ new Point(50.f, 50.f) };
-        std::unique_ptr<SceneNode> bPoint{ new Point(50.f, 100.f) };
-        std::unique_ptr<SceneNode> cPoint{ new Point(100.f, 50.f) };
-        std::unique_ptr<SceneNode> dPoint{ new Point(100.f, 100.f) };
-
-        mElements.push_back(std::move(aPoint));
-        mElements.push_back(std::move(bPoint));
-        mElements.push_back(std::move(cPoint));
-        mElements.push_back(std::move(dPoint));
-
-    }
+    : mWindow(sf::VideoMode(windowWidth, windowHeight), windowName, sf::Style::Default)
+    , mWorkFlow{ mWindow }
+    {}
 
     void Application::run()
     {
@@ -52,19 +38,14 @@ namespace Editor
     {
         mWindow.clear(sf::Color::White);
 
-        for (std::unique_ptr<SceneNode>& element : mElements)
-        {
-            mWindow.draw(*element);
-        }
+        mWorkFlow.draw();
+
         mWindow.display();
     }
 
     void Application::update(sf::Time dt)
     {
-        for (std::unique_ptr<SceneNode>& element : mElements)
-        {
-            element->update(dt);
-        }
+        mWorkFlow.update(dt);
     }
 
 
@@ -72,10 +53,37 @@ namespace Editor
     {
         sf::Event event;
 
+        static unsigned short numPoint { 0 };
+        constexpr static float offset { 10.f };
+        constexpr static short maxPoints{ 2 };
+        static std::array<sf::Vector2f, maxPoints> linePositions;
+
         while (mWindow.pollEvent(event))
         {
             if (event.type == sf::Event::Closed)
                 mWindow.close();
+
+            if (event.type == sf::Event::MouseButtonPressed && event.key.code == static_cast<uint32_t>(sf::Mouse::Left))
+            {
+                sf::Vector2i positionMouse = sf::Mouse::getPosition(mWindow);
+                sf::FloatRect positionRect = mWorkFlow.getRect();
+
+
+                if ((positionRect.left + offset < positionMouse.x && positionMouse.x < positionRect.left + positionRect.width - offset) &&
+                    (positionRect.top + offset < positionMouse.y && positionMouse.y < positionRect.top + positionRect.height - offset))
+                {
+                    //mWorkFlow.addPoint(sf::Vector2f(positionMouse.x, positionMouse.y));
+                    numPoint += 1;
+                    linePositions[(numPoint - 1) % maxPoints] = sf::Vector2f(positionMouse.x, positionMouse.y);
+
+                    if (numPoint == 2)
+                    {
+                        numPoint = 0;
+                        mWorkFlow.addLine(linePositions[0], linePositions[1]);
+                    }
+                }
+
+            }
         }
     }
 }

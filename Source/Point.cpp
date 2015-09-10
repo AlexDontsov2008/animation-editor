@@ -1,16 +1,16 @@
 #include <Point.hpp>
 #include <Utility.hpp>
+#include <InitialParametrs.hpp>
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/System/Time.hpp>
 
+
 #include <iostream>
 
 namespace Editor
 {
-    static constexpr float pointSize { 10.f };
-
     Point::~Point()
     {}
 

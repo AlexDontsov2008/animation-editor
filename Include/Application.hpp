@@ -3,7 +3,7 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
-#include <SceneNode.hpp>
+#include <WorkFlow.hpp>
 
 #include <memory>
 #include <vector>
@@ -26,11 +26,9 @@ namespace Editor
             void                render();
             void                processEvents();
 
-            void                init();
-
         private:
             sf::RenderWindow                        mWindow;
-            std::vector<std::unique_ptr<SceneNode>> mElements;
+            WorkFlow                                mWorkFlow;
     };
 }
 
