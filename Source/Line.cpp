@@ -14,7 +14,7 @@ namespace Editor
     : mLine()
     , mFirstPosition(firstPos)
     , mSecondPosition(secondPos)
-    , mColor(sf::Color::Black)
+    , mColor(GrayColor)
     {
         init();
     }
@@ -33,15 +33,15 @@ namespace Editor
             (mFirstPosition.x < mSecondPosition.x &&  mFirstPosition.y > mSecondPosition.y))
         {
             if (mFirstPosition.y > mSecondPosition.y)
-                additAngle = 270.f;
+                additAngle = rightAngle * 3.f;
             else
-                additAngle = 90.f;
+                additAngle = rightAngle;
             vecRhs = sf::Vector2f{ 0, mSecondPosition.y - mFirstPosition.y };
         }
         else
         {
             if (mFirstPosition.x > mSecondPosition.x)
-                additAngle = 180.f;
+                additAngle = rightAngle * 2.f;
             vecRhs = sf::Vector2f{ mSecondPosition.x - mFirstPosition.x, 0 };
         }
 
@@ -49,9 +49,9 @@ namespace Editor
 
         if (mFirstPosition.x == mSecondPosition.x)
             if (mFirstPosition.y > mSecondPosition.y)
-                angle = -90.f;
+                angle = -rightAngle;
             else
-                angle = 90.f;
+                angle = rightAngle;
         else
             angle = angleBetweenVectors(vecLhs, vecRhs);
 

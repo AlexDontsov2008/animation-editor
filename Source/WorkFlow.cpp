@@ -35,6 +35,7 @@ namespace Editor
         return mWorkArea.getRect();
     }
 
+     // Functions for add the Points and the Lines on the WorkArea.
      void WorkFlow::addPoint(const sf::Vector2f& position)
      {
         std::unique_ptr<SceneNode> newPoint{ new Point(position.x, position.y) };
@@ -45,5 +46,10 @@ namespace Editor
      {
         std::unique_ptr<SceneNode> newLine{ new Line(firstPos, secondPos) };
         mElements.push_back(std::move(newLine));
+     }
+
+     void WorkFlow::setBorderColor(const sf::Color& color)
+     {
+        mWorkArea.setBorderColor(color);
      }
 }

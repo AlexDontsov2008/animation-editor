@@ -16,7 +16,7 @@ namespace Editor
 
     Point::Point(float posX, float posY)
     : mPoint(pointSize)
-    , mColor(sf::Color::Black)
+    , mColor(GrayColor)
     {
         setCenterOrigin(mPoint);
         mPoint.setFillColor(mColor);

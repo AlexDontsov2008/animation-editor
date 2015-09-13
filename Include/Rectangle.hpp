@@ -21,11 +21,13 @@ namespace Editor
 
             virtual void            update(sf::Time dt) override;
             virtual sf::FloatRect   getRect() const override;
+
+            void                    setColor(const sf::Color& color);
+            void                    setBorderColor(const sf::Color& color);
         protected:
             virtual void            draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
         private:
-            void                    setColor(const sf::Color& color);
             void                    init(float posX, float posY);
 
         private:

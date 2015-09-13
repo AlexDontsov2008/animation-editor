@@ -8,7 +8,7 @@ namespace Editor
 {
     Rectangle::Rectangle(float width, float height, float posX, float posY)
     : mRectangle(sf::Vector2f(width, height))
-    , mColor(sf::Color::White)
+    , mColor(GrayColor)
     {
         init(posX, posY);
     }
@@ -19,13 +19,14 @@ namespace Editor
     void Rectangle::init(float posX, float posY)
     {
         mRectangle.setPosition(posX, posY);
+        mRectangle.setFillColor(boxColor);
         mRectangle.setOutlineThickness(borderSize);
-        mRectangle.setOutlineColor(sf::Color::Black);
+        mRectangle.setOutlineColor(mColor);
     }
 
     void Rectangle::update(sf::Time dt)
     {
-        // ...
+        mRectangle.setOutlineColor(mColor);
     }
 
     void Rectangle::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -38,8 +39,8 @@ namespace Editor
         return mRectangle.getGlobalBounds();
     }
 
-    void Rectangle::setColor(const sf::Color& color)
+    void Rectangle::setBorderColor(const sf::Color& color)
     {
-        mColor = std::move(color);
+        mColor = color;
     }
 }

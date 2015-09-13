@@ -7,13 +7,32 @@
 
 #include <iostream>
 #include <array>
+#include <stdexcept>
 
 namespace Editor
 {
     Application::Application()
     : mWindow(sf::VideoMode(windowWidth, windowHeight), windowName, sf::Style::Default)
+    , mFontStorage { pathToFont }
     , mWorkFlow{ mWindow }
-    {}
+    , mButtons {}
+    , mInput{ mWindow }
+    , mFrameNumber{ 1 }
+    {
+        initButtons();
+    }
+
+    void Application::initButtons()
+    {
+        std::unique_ptr<Button> newButtonMove { new Button(UserInput::MoveType, mFontStorage.getFont(), "Move", 10.f, 30.f, true) };
+        std::unique_ptr<Button> newButtonPoint{ new Button(UserInput::PointType, mFontStorage.getFont(), "Point", 10.f, 100.f, false) };
+        std::unique_ptr<Button> newButtonLine { new Button(UserInput::LineType, mFontStorage.getFont(), "Line", 10.f, 170.f, false) };
+
+        mButtons.push_back(std::move(newButtonMove));
+        mButtons.push_back(std::move(newButtonPoint));
+        mButtons.push_back(std::move(newButtonLine));
+    }
+
 
     void Application::run()
     {
@@ -36,9 +55,11 @@ namespace Editor
 
     void Application::render()
     {
-        mWindow.clear(sf::Color::White);
+        mWindow.clear(windowColor);
 
         mWorkFlow.draw();
+        for (auto& button : mButtons)
+            mWindow.draw(*button);
 
         mWindow.display();
     }
@@ -46,45 +67,15 @@ namespace Editor
     void Application::update(sf::Time dt)
     {
         mWorkFlow.update(dt);
+
+        for (auto& button : mButtons)
+            button->update(dt);
     }
 
 
     void Application::processEvents()
     {
-        sf::Event event;
-
-        static unsigned short numPoint { 0 };
-        constexpr static float offset { 10.f };
-        constexpr static short maxPoints{ 2 };
-        static std::array<sf::Vector2f, maxPoints> linePositions;
-
-        while (mWindow.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                mWindow.close();
-
-            if (event.type == sf::Event::MouseButtonPressed && event.key.code == static_cast<uint32_t>(sf::Mouse::Left))
-            {
-                sf::Vector2i positionMouse = sf::Mouse::getPosition(mWindow);
-                sf::FloatRect positionRect = mWorkFlow.getRect();
-
-
-                if ((positionRect.left + offset < positionMouse.x && positionMouse.x < positionRect.left + positionRect.width - offset) &&
-                    (positionRect.top + offset < positionMouse.y && positionMouse.y < positionRect.top + positionRect.height - offset))
-                {
-                    //mWorkFlow.addPoint(sf::Vector2f(positionMouse.x, positionMouse.y));
-                    numPoint += 1;
-                    linePositions[(numPoint - 1) % maxPoints] = sf::Vector2f(positionMouse.x, positionMouse.y);
-
-                    if (numPoint == 2)
-                    {
-                        numPoint = 0;
-                        mWorkFlow.addLine(linePositions[0], linePositions[1]);
-                    }
-                }
-
-            }
-        }
+        mInput.processEvents(mWorkFlow, mButtons);
     }
 }
 

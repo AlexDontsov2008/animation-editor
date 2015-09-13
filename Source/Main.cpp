@@ -4,8 +4,15 @@
 
 int main()
 {
-    Editor::Application app;
-    app.run();
+    try
+    {
+        Editor::Application app;
+        app.run();
+    }
+    catch (std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
 
     return 0;
 }

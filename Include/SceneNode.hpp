@@ -12,6 +12,7 @@ namespace sf
 
 namespace Editor
 {
+    // Abstact class, which describe scene elements.
     class SceneNode : public sf::Transformable, public sf::Drawable , private sf::NonCopyable
     {
         public:
@@ -21,6 +22,7 @@ namespace Editor
 
         protected:
             virtual void            draw(sf::RenderTarget& target, sf::RenderStates states) const = 0;
+            // Get position and size of our drawing elements.
             virtual sf::FloatRect   getRect() const = 0;
     };
 }
