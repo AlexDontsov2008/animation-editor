@@ -15,16 +15,29 @@ namespace Editor
 
             virtual void            update(sf::Time dt) override;
 
+            bool                    getActive() const override;
+            void                    setActive(bool isActive) override;
+
+            void                    setEnable(bool isEnable) override;
+            bool                    getEnable() const override;
+
+            SceneNode::NodeType     getNodeType() const override;
+
+            sf::Vector2f            getPosition() const;
+            void                    setPosition(const sf::Vector2f& position);
+
+
         protected:
             virtual void            draw(sf::RenderTarget& target, sf::RenderStates states) const override;
             virtual sf::FloatRect   getRect() const override;
 
-        private:
-            void                    setColor(const sf::Color& color);
 
         private:
             sf::CircleShape         mPoint;
             sf::Color               mColor;
+
+            bool                    mIsActive;
+            bool                    mIsEnable;
     };
 }
 

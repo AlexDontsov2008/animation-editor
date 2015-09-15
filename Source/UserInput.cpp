@@ -1,5 +1,7 @@
 #include <UserInput.hpp>
+#include <Utility.hpp>
 #include <InitialParametrs.hpp>
+#include <Point.hpp>
 
 #include <SFML/Window/Event.hpp>
 
@@ -16,21 +18,9 @@ namespace Editor
     void UserInput::processEvents(WorkFlow& workFlow, std::vector<std::unique_ptr<Button>>& buttons)
     {
         sf::Event event;
-        if (isMousePositionInArea(sf::Mouse::getPosition(mWindow), workFlow.getRect(), true))
-        {
-            workFlow.setBorderColor(sf::Color::White);
-        }
-        else
-        {
-            workFlow.setBorderColor(GrayColor);
-            for (auto& button : buttons)
-            {
-                if (isMousePositionInArea(sf::Mouse::getPosition(mWindow), button->getRect(), false))
-                    button->setActive(true);
-                else
-                    button->setActive(false);
-            }
-        }
+        SceneNode* activeElement = checkActiveElements(workFlow, buttons);
+        //checkActiveElements(workFlow, buttons);
+        processMouseMoveInstrument(workFlow, sf::Mouse::getPosition(mWindow), activeElement);
 
         while (mWindow.pollEvent(event))
         {
@@ -39,73 +29,76 @@ namespace Editor
             if (event.type == sf::Event::MouseButtonPressed && event.key.code == static_cast<unsigned int>(sf::Mouse::Left))
             {
                 if (isMousePositionInArea(sf::Mouse::getPosition(mWindow), workFlow.getRect(), true))
-                {
-                    processInstruments(workFlow, event);
-                }
+                    processInstruments(workFlow, activeElement);
                 else
-                {
                     processButtons(buttons, event);
-                }
             }
         }
     }
 
 
-    // Function for process every Instrument
-    void UserInput::processMouseMoveInstrument(WorkFlow& workFlow, sf::Event event, sf::Vector2i mousePosition)
+    // Function for process every Instrument!!!!
+    void UserInput::processMouseMoveInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
     {
-        // ...
+        if (activeElement != nullptr && activeElement->getNodeType() == SceneNode::Point)
+        {
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            {
+                Point* point = static_cast<Point*>(activeElement);
+                point->setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
+            }
+        }
     }
 
-    void UserInput::processPointInstrument(WorkFlow& workFlow, sf::Event event, sf::Vector2i mousePosition)
+    void UserInput::processPointInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
     {
-        workFlow.addPoint(sf::Vector2f(mousePosition.x, mousePosition.y));
+        if (activeElement == nullptr)
+            workFlow.addPoint(sf::Vector2f(mousePosition.x, mousePosition.y));
+        else
+            std::cout << "In this coords, we already have an object\n";
     }
 
-    void UserInput::processLineInstrument(WorkFlow& workFlow, sf::Event event, sf::Vector2i mousePosition)
+    void UserInput::processLineInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
     {
         static unsigned short numPoint { 0 };
         constexpr static short maxPoints{ 2 };
-        static std::array<sf::Vector2f, maxPoints> linePositions;
 
-        workFlow.addPoint(sf::Vector2f(mousePosition.x, mousePosition.y));
-        numPoint += 1;
-        linePositions[(numPoint - 1) % maxPoints] = sf::Vector2f(mousePosition.x, mousePosition.y);
+        static std::array<Point*, maxPoints> points{};
+
+        if (activeElement != nullptr && activeElement->getNodeType() == SceneNode::Point)
+        {
+            numPoint += 1;
+            points[(numPoint - 1) % maxPoints] = static_cast<Point*>(activeElement);
+            points[(numPoint - 1) % maxPoints]->setEnable(true);
+        }
 
         if (numPoint == maxPoints)
         {
             numPoint = 0;
-            workFlow.addLine(linePositions[0], linePositions[1]);
+            points[0]->setEnable(false);
+            points[1]->setEnable(false);
+            if (points[0] != points[1])
+                workFlow.addLine(points[0]->getPosition(), points[1]->getPosition());
         }
+
     }
 
-    // Check Mouse position. If isWorkArea == true then evalute with offset.
-    bool UserInput::isMousePositionInArea(const sf::Vector2i& mousePosition, const sf::FloatRect& workArea, bool isWorkArea)
-    {
-        if (isWorkArea)
-            return (workArea.left + workAreaOffset < mousePosition.x && mousePosition.x < workArea.left + workArea.width - workAreaOffset) &&
-                   (workArea.top + workAreaOffset < mousePosition.y  && mousePosition.y < workArea.top + workArea.height - workAreaOffset);
-
-        return (workArea.left <= mousePosition.x && mousePosition.x <= workArea.left + workArea.width) &&
-               (workArea.top <= mousePosition.y  && mousePosition.y <= workArea.top + workArea.height);
-    }
-
-    void UserInput::processInstruments(WorkFlow& workFlow, sf::Event event)
+    void UserInput::processInstruments(WorkFlow& workFlow, SceneNode* activeElement)
     {
         sf::Vector2i positionMouse = sf::Mouse::getPosition(mWindow);
 
         switch (mType)
         {
             case MoveType:
-                processMouseMoveInstrument(workFlow, event, positionMouse);
+                //processMouseMoveInstrument(workFlow, positionMouse, activeElement);
                 break;
 
             case PointType:
-                processPointInstrument(workFlow, event, positionMouse);
+                processPointInstrument(workFlow, positionMouse, activeElement);
                 break;
 
             case LineType:
-                processLineInstrument(workFlow, event, positionMouse);
+                processLineInstrument(workFlow, positionMouse, activeElement);
                 break;
         }
     }
@@ -117,16 +110,18 @@ namespace Editor
         {
             if (isMousePositionInArea(positionMouse, button->getRect(), false))
             {
+                for (auto& enableButton : buttons)
+                {
+                    if (enableButton->getEnable() && enableButton == button)
+                        return;
+                    else
+                        enableButton->setEnable(false);
+                }
                 button->setEnable(true);
                 setInstrumentType(static_cast<InstrumentType>(button->getAction()));
             }
-            else
-            {
-                button->setEnable(false);
-            }
         }
     }
-
 
     // Get and Set methods for Instrument type.
     UserInput::InstrumentType UserInput::getInstrumentType() const
@@ -137,5 +132,42 @@ namespace Editor
     void UserInput::setInstrumentType(InstrumentType type)
     {
         mType = type;
+    }
+
+    SceneNode* UserInput::checkActiveElements(WorkFlow& workFlow, std::vector<std::unique_ptr<Button>>& buttons) const
+    {
+        if (isMousePositionInArea(sf::Mouse::getPosition(mWindow), workFlow.getRect(), true))
+        {
+            workFlow.setActive(true);
+            return checkActiveDrawingElements(workFlow);
+        }
+        else
+        {
+            workFlow.setActive(false);
+            for (auto& button : buttons)
+            {
+                if (isMousePositionInArea(sf::Mouse::getPosition(mWindow), button->getRect(), false))
+                    button->setActive(true);
+                else
+                    button->setActive(false);
+            }
+        }
+        return nullptr;
+    }
+
+    // Check active draw elements (Points, Lines).
+    SceneNode* UserInput::checkActiveDrawingElements(WorkFlow& workFlow) const
+    {
+        for (auto& element : workFlow.setElements())
+        {
+            if (isActiveDrawingElement(sf::Mouse::getPosition(mWindow), element->getRect(), element.get()))
+            {
+                element->setActive(true);
+                return element.get();
+            }
+            else
+                element->setActive(false);
+        }
+        return nullptr;
     }
 }

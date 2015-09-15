@@ -28,6 +28,9 @@ namespace Editor
             void            addLine(const sf::Vector2f& firstPos, const sf::Vector2f& secondPos);
 
             void            setBorderColor(const sf::Color& color);
+            void            setActive(bool isActive);
+
+            std::vector<std::unique_ptr<SceneNode>>& setElements();
 
         private:
             // Container for store our entity.

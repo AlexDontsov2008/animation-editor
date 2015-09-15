@@ -15,12 +15,22 @@ namespace Editor
 
             virtual void                update(sf::Time dt) override;
 
+            virtual bool                getActive() const override;
+            virtual void                setActive(bool isActive) override;
+
+            virtual void                setEnable(bool isEnable) override;
+            virtual bool                getEnable() const override;
+
+            SceneNode::NodeType         getNodeType() const override;
+
+            float                       getAngle() const;
+            float                       getLenght() const;
+
         protected:
             virtual void                draw(sf::RenderTarget& target, sf::RenderStates states) const override;
             virtual sf::FloatRect       getRect() const override;
 
         private:
-            void                        setColor(const sf::Color& color);
             void                        init();
 
         private:
@@ -28,6 +38,10 @@ namespace Editor
             sf::Vector2f                mFirstPosition;
             sf::Vector2f                mSecondPosition;
             sf::Color                   mColor;
+            float                       mAngle;
+
+            bool                        mIsActive;
+            bool                        mIsEnable;
     };
 }
 

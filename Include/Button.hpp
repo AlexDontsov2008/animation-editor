@@ -19,10 +19,13 @@ namespace Editor
             //  Return instrument Type.
             unsigned int                getAction() const;
 
-            void                        setActive(bool isActive);
-            void                        setEnable(bool isEnable);
+            // Check if +Active Element.
+            void                        setActive(bool isActive) override;
+            bool                        getActive() const override;
 
-            bool                        getEnable() const;
+            // Check if Enable element
+            virtual void                setEnable(bool isEnable) override;
+            virtual bool                getEnable() const override;
 
             virtual sf::FloatRect       getRect() const override;
 

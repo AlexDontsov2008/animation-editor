@@ -14,7 +14,10 @@ namespace Editor
     : mLine()
     , mFirstPosition(firstPos)
     , mSecondPosition(secondPos)
-    , mColor(GrayColor)
+    , mColor(InactiveColor)
+    , mAngle(0.f)
+    , mIsActive(false)
+    , mIsEnable(false)
     {
         init();
     }
@@ -55,7 +58,11 @@ namespace Editor
         else
             angle = angleBetweenVectors(vecLhs, vecRhs);
 
-
+        std::cout << "Angle: " << angle + additAngle << '\n';
+        std::cout << "firstPosition: " << mFirstPosition.x  << ", " << mFirstPosition.y << '\n';
+        std::cout << "secondPosition: " << mSecondPosition.x << ", " << mSecondPosition.y << '\n';
+        std::cout << "Line lenght: " << vectorLenght(mSecondPosition - mFirstPosition) << '\n';
+        mAngle = angle + additAngle;
 
         mLine.setSize(sf::Vector2f(vectorLenght(vecLhs), LineThickness));
         mLine.setPosition(mFirstPosition);
@@ -65,7 +72,19 @@ namespace Editor
 
     void Line::update(sf::Time dt)
     {
-        // ...
+        if (mIsEnable)
+        {
+            mColor = EnableColor;
+        }
+        else
+        {
+            if (mIsActive)
+                mColor = ActiveColor;
+            else
+                mColor = InactiveColor;
+        }
+
+        mLine.setFillColor(mColor);
     }
 
     void Line::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -78,8 +97,39 @@ namespace Editor
         return mLine.getGlobalBounds();
     }
 
-    void Line::setColor(const sf::Color& color)
+
+    bool Line::getActive() const
     {
-        mColor = std::move(color);
+        return mIsActive;
+    }
+
+    void Line::setActive(bool isActive)
+    {
+        mIsActive = isActive;
+    }
+
+    SceneNode::NodeType Line::getNodeType() const
+    {
+        return SceneNode::Line;
+    }
+
+    float Line::getAngle() const
+    {
+        return mAngle;
+    }
+
+    float Line::getLenght() const
+    {
+        return vectorLenght(mSecondPosition - mFirstPosition);
+    }
+
+    void Line::setEnable(bool isEnable)
+    {
+        mIsEnable = isEnable;
+    }
+
+    bool Line::getEnable() const
+    {
+        return mIsEnable;
     }
 }

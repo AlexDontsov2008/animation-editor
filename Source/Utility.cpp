@@ -1,4 +1,6 @@
 #include <Utility.hpp>
+#include <InitialParametrs.hpp>
+#include <Line.hpp>
 
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Text.hpp>
@@ -44,5 +46,126 @@ namespace Editor
     {
         constexpr float PI{ 3.1415926f };
         return rad * 180.f / PI;
+    }
+
+    float angleToRad(const float angle)
+    {
+        constexpr float PI{ 3.1415926f };
+        return angle * PI / 180.f;
+    }
+
+    bool isMousePositionInArea(const sf::Vector2i& mousePosition, const sf::FloatRect& workArea, bool isWorkArea)
+    {
+        if (isWorkArea)
+            return (workArea.left + workAreaOffset < mousePosition.x && mousePosition.x < workArea.left + workArea.width - workAreaOffset) &&
+                   (workArea.top + workAreaOffset < mousePosition.y  && mousePosition.y < workArea.top + workArea.height - workAreaOffset);
+
+        return (workArea.left <= mousePosition.x && mousePosition.x <= workArea.left + workArea.width) &&
+               (workArea.top <= mousePosition.y  && mousePosition.y <= workArea.top + workArea.height);
+    }
+
+    // Get precision for activation Line from line Lenght.
+    const float getPrecisionLevel(float lineLenght)
+    {
+        float precisionLevel { 0.f };
+
+        if (lineLenght <= 150.f)
+            precisionLevel = 7.f;
+        else if (lineLenght > 150.f && lineLenght <= 300.f)
+            precisionLevel = 12.f;
+        else if (lineLenght > 300.f && lineLenght <= 500.f)
+            precisionLevel = 16.f;
+        else if(lineLenght > 500.f)
+            precisionLevel = 21.f;
+
+        return precisionLevel;
+    }
+
+    // Check Lines which exist in an odd quarters
+    bool checkOddQuarter(const sf::Vector2i& mousePosition, const sf::FloatRect& Area, float precisionLevel)
+    {
+        bool isActive { false };
+        float leftPos = Area.left, topPos = Area.top + Area.height;
+
+        for (float offsetX = Area.width / precisionLevel, offsetY = Area.height / precisionLevel;
+             leftPos <= Area.left + Area.width - offsetX;)
+        {
+            isActive = isMousePositionInArea(mousePosition, sf::FloatRect(leftPos, topPos - offsetY, offsetX, offsetY), false);
+            if (isActive)
+                return true;
+
+            leftPos += offsetX / 2.f;
+            topPos -= offsetY / 2.f;
+        }
+        return false;
+    }
+
+    // Check Lines which exist in an even quarters
+    bool checkEvenQuarter(const sf::Vector2i& mousePosition, const sf::FloatRect& Area, float precisionLevel)
+    {
+        bool isActive { false };
+        float  leftPos = Area.left, topPos = Area.top;
+
+        for (float offsetX = Area.width / precisionLevel, offsetY = Area.height / precisionLevel;
+             leftPos <= Area.left + Area.width - offsetX;)
+        {
+            isActive = isMousePositionInArea(mousePosition, sf::FloatRect(leftPos, topPos, offsetX, offsetY), false);
+            if (isActive)
+                return true;
+
+            leftPos += offsetX / 2.f;
+            topPos += offsetY / 2.f;
+        }
+        return false;
+    }
+
+    // Global function for chek active lines
+    bool checkActiveLines(const sf::Vector2i& mousePosition, const sf::FloatRect& Area, SceneNode* element)
+    {
+        Line* line = static_cast<Line*>(element);
+        constexpr float pi {90.f}, offset { 3.f }, additionLenght { 5.f };
+        const float precisionLevel = getPrecisionLevel(line->getLenght()), angle = line->getAngle();
+
+        if ( (angle >= pi - offset && angle <= pi + offset) || (angle >= 3 * pi - offset && angle <= 3 * pi + offset))
+        {
+            return isMousePositionInArea(mousePosition, sf::FloatRect(Area.left - additionLenght, Area.top,
+                                                                      Area.width + additionLenght * 2.f, Area.height), false);
+        }
+        else if ( (angle >= 2 * pi - offset && angle <= 2 * pi + offset) || (angle >= 4 * pi - offset && angle <= 4 * pi) ||
+                  (angle >= pi * 0 && angle <= offset))
+        {
+            return isMousePositionInArea(mousePosition, sf::FloatRect(Area.left, Area.top - additionLenght,
+                                                                      Area.width, Area.height + additionLenght * 2.f), false);
+        }
+        else if ( (angle >= pi && angle <= 2 * pi) || (angle >= 3 * pi && angle <= 4 * pi))
+        {
+            if (checkOddQuarter(mousePosition, Area, precisionLevel))
+                return true;
+        }
+        else
+        {
+            if (checkEvenQuarter(mousePosition, Area, precisionLevel))
+                return true;
+        }
+
+        return false;
+    }
+
+    bool isActiveDrawingElement(const sf::Vector2i& mousePosition, const sf::FloatRect& Area, SceneNode* element)
+    {
+        switch (element->getNodeType())
+        {
+            case SceneNode::Point:
+                return isMousePositionInArea(mousePosition, Area, false);
+
+            case SceneNode::Line:
+                return checkActiveLines(mousePosition, Area, element);
+
+            case SceneNode::None:
+                return false;
+
+            default:
+                return false;
+        }
     }
 }

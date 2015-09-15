@@ -22,8 +22,12 @@ namespace Editor
             virtual void            update(sf::Time dt) override;
             virtual sf::FloatRect   getRect() const override;
 
-            void                    setColor(const sf::Color& color);
-            void                    setBorderColor(const sf::Color& color);
+            virtual bool            getActive() const override;
+            virtual void            setActive(bool isActive) override;
+
+            virtual void            setEnable(bool isEnable) override;
+            virtual bool            getEnable() const override;
+
         protected:
             virtual void            draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -33,6 +37,9 @@ namespace Editor
         private:
             sf::RectangleShape      mRectangle;
             sf::Color               mColor;
+
+            bool                    mIsActive;
+            bool                    mIsEnable;
     };
 }
 

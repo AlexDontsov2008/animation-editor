@@ -2,8 +2,11 @@
 #define _UTILITY_HPP_
 
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Rect.hpp>
 
 #include <sstream>
+
+#include <SceneNode.hpp>
 
 namespace sf
 {
@@ -25,6 +28,11 @@ namespace Editor
     float angleBetweenVectors(const sf::Vector2f& vecLhs, const sf::Vector2f& vecRhs);
     // translate radians to angles.
     float radToAngle(const float rad);
+    float angleToRad(const float angle);
+
+    // Check is mouse in current Area
+    bool isMousePositionInArea(const sf::Vector2i& mousePosition, const sf::FloatRect& workArea, bool isWorkArea);
+    bool isActiveDrawingElement(const sf::Vector2i& mousePosition, const sf::FloatRect& Area, SceneNode* element);
 
     // Process value to String.
     template <typename T>

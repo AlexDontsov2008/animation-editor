@@ -2,6 +2,8 @@
 #define _INITIALPARAMETRS_HPP_
 
 #include <SFML/System/Time.hpp>
+#include <SFML/Graphics/Color.hpp>
+
 
 namespace Editor
 {
@@ -11,10 +13,12 @@ namespace Editor
     const static sf::Time dt{ sf::seconds(1.f / 60.f) };
     constexpr static float borderSize { 3.f };
     //const sf::Color GrayColor(sf::Color(174, 171, 171));
-    const sf::Color GrayColor(sf::Color(17, 18, 93));
+    const sf::Color InactiveColor(sf::Color(17, 18, 93));
     //const sf::Color boxColor(sf::Color(83, 85, 247));
     const sf::Color boxColor(sf::Color(114, 116, 248));
     const sf::Color windowColor(sf::Color(17, 18, 93));
+    const sf::Color ActiveColor(sf::Color::White);
+    const sf::Color EnableColor(sf::Color::White);
 
     // Parametrs for our work area
     constexpr static float workAreaPosX{ 75 }, workAreaPosY{ 30 }, workAreaWidth{ 1000 }, workAreaHeight{ 700 };

@@ -23,6 +23,7 @@ namespace Editor
                 LineType,
             };
 
+
         public:
                                 UserInput(sf::RenderWindow& window);
 
@@ -36,17 +37,20 @@ namespace Editor
 
         private:
             // Function for process every Instrument
-            void                processMouseMoveInstrument(WorkFlow& workFlow, sf::Event event, sf::Vector2i mousePosition);
-            void                processPointInstrument(WorkFlow& workFlow, sf::Event event, sf::Vector2i mousePosition);
-            void                processLineInstrument(WorkFlow& workFlow, sf::Event event, sf::Vector2i mousePosition);
+            void                processMouseMoveInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement);
+            void                processPointInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement);
+            void                processLineInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement);
 
             // Major process function for instruments
-            void                processInstruments(WorkFlow& workFlow, sf::Event event);
+            void                processInstruments(WorkFlow& workFlow, SceneNode* activeElement);
 
             void                processButtons(std::vector<std::unique_ptr<Button>>& buttons, sf::Event event);
-            // Check Mouse position in WorkArea
 
-            bool                isMousePositionInArea(const sf::Vector2i& mousePosition, const sf::FloatRect& workArea, bool isWorkArea);
+            // Check active elements
+            SceneNode*          checkActiveElements(WorkFlow& workFlow, std::vector<std::unique_ptr<Button>>& buttons) const;
+
+            // Check active draw elements (Points, Lines).
+            SceneNode*          checkActiveDrawingElements(WorkFlow& workFlow) const;
 
 
         private:

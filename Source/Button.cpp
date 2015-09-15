@@ -23,26 +23,27 @@ namespace Editor
 
     void Button::update(sf::Time dt)
     {
-        if (mIsActive)
-        {
-            mBox.setBorderColor(sf::Color::White);
-            mLabel.setColor(sf::Color::White);
-        }
-        else
-        {
-            mBox.setBorderColor(GrayColor);
-            mLabel.setColor(GrayColor);
-        }
+
 
         if (mIsEnable)
         {
-            mLabel.setStyle(sf::Text::Bold | sf::Text::Underlined);
-            mLabel.setColor(sf::Color::White);
-            mBox.setBorderColor(sf::Color::White);
+            mBox.setEnable(true);
+            mLabel.setEnable(true);
         }
         else
         {
-            mLabel.setStyle(sf::Text::Regular);
+            mBox.setEnable(false);
+            mLabel.setEnable(false);
+            if (mIsActive)
+            {
+                mBox.setActive(true);
+                mLabel.setActive(true);
+            }
+            else
+            {
+                mBox.setActive(false);
+                mLabel.setActive(false);
+            }
         }
 
         mBox.update(dt);
@@ -57,6 +58,11 @@ namespace Editor
     void Button::setActive(bool isActive)
     {
         mIsActive = isActive;
+    }
+
+    bool Button::getActive() const
+    {
+        return mIsActive;
     }
 
     void Button::setEnable(bool isEnable)

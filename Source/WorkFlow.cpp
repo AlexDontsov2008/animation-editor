@@ -48,8 +48,14 @@ namespace Editor
         mElements.push_back(std::move(newLine));
      }
 
-     void WorkFlow::setBorderColor(const sf::Color& color)
+     void WorkFlow::setActive(bool isActive)
      {
-        mWorkArea.setBorderColor(color);
+        mWorkArea.setActive(isActive);
      }
+
+     std::vector<std::unique_ptr<SceneNode>>& WorkFlow::setElements()
+     {
+        return mElements;
+     }
+
 }

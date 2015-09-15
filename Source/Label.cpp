@@ -9,7 +9,9 @@ namespace Editor
 {
     Label::Label(const sf::Font& font, const std::string& text, float posX, float posY)
     : mText{}
-    , mColor{ GrayColor }
+    , mColor{ InactiveColor }
+    , mIsActive{ false }
+    , mIsEnable{ false }
     {
         initText(font, text, posX, posY);
     }
@@ -19,6 +21,20 @@ namespace Editor
 
     void Label::update(sf::Time dt)
     {
+        if (mIsEnable)
+        {
+            mText.setStyle(sf::Text::Bold | sf::Text::Underlined);
+            mColor = ActiveColor;
+        }
+        else
+        {
+            if (mIsActive)
+                mColor = ActiveColor;
+            else
+                mColor = InactiveColor;
+
+            mText.setStyle(sf::Text::Regular);
+        }
         mText.setColor(mColor);
     }
 
@@ -57,14 +73,30 @@ namespace Editor
     }
 
 
-    void Label::setColor(const sf::Color& color)
-    {
-        mColor = color;
-    }
-
     void Label::setStyle(unsigned int style)
     {
         mText.setStyle(style);
+    }
+
+    void Label::setActive(bool isActive)
+    {
+        mIsActive = isActive;
+    }
+
+    bool Label::getActive() const
+    {
+        return mIsActive;
+    }
+
+    // Check if Enable element
+    void Label::setEnable(bool isEnable)
+    {
+        mIsEnable = isEnable;
+    }
+
+    bool Label::getEnable() const
+    {
+        return mIsEnable;
     }
 }
 

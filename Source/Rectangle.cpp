@@ -8,7 +8,9 @@ namespace Editor
 {
     Rectangle::Rectangle(float width, float height, float posX, float posY)
     : mRectangle(sf::Vector2f(width, height))
-    , mColor(GrayColor)
+    , mColor(InactiveColor)
+    , mIsActive(false)
+    , mIsEnable(false)
     {
         init(posX, posY);
     }
@@ -26,6 +28,17 @@ namespace Editor
 
     void Rectangle::update(sf::Time dt)
     {
+        if (mIsEnable)
+        {
+            mColor = ActiveColor;
+        }
+        else
+        {
+            if (mIsActive)
+                mColor = ActiveColor;
+            else
+                mColor = InactiveColor;
+        }
         mRectangle.setOutlineColor(mColor);
     }
 
@@ -39,8 +52,23 @@ namespace Editor
         return mRectangle.getGlobalBounds();
     }
 
-    void Rectangle::setBorderColor(const sf::Color& color)
+    bool Rectangle::getActive() const
     {
-        mColor = color;
+        return mIsActive;
+    }
+
+    void Rectangle::setActive(bool isActive)
+    {
+        mIsActive = isActive;
+    }
+
+    void Rectangle::setEnable(bool isEnable)
+    {
+        mIsEnable = isEnable;
+    }
+
+    bool Rectangle::getEnable() const
+    {
+        return mIsEnable;
     }
 }

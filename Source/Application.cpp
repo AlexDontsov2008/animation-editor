@@ -4,6 +4,7 @@
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/ContextSettings.hpp>
+#include <SFML/Window/ContextSettings.hpp>
 
 #include <iostream>
 #include <array>
@@ -11,8 +12,11 @@
 
 namespace Editor
 {
+
+    static const sf::ContextSettings settings(24, 8, 16, 3, 0);
+
     Application::Application()
-    : mWindow(sf::VideoMode(windowWidth, windowHeight), windowName, sf::Style::Default)
+    : mWindow(sf::VideoMode(windowWidth, windowHeight), windowName, sf::Style::Default, settings)
     , mFontStorage { pathToFont }
     , mWorkFlow{ mWindow }
     , mButtons {}
@@ -24,9 +28,9 @@ namespace Editor
 
     void Application::initButtons()
     {
-        std::unique_ptr<Button> newButtonMove { new Button(UserInput::MoveType, mFontStorage.getFont(), "Move", 10.f, 30.f, true) };
-        std::unique_ptr<Button> newButtonPoint{ new Button(UserInput::PointType, mFontStorage.getFont(), "Point", 10.f, 100.f, false) };
-        std::unique_ptr<Button> newButtonLine { new Button(UserInput::LineType, mFontStorage.getFont(), "Line", 10.f, 170.f, false) };
+        std::unique_ptr<Button> newButtonMove { new Button(UserInput::MoveType, mFontStorage.getFont(), "Move", 12.f, 30.f, true) };
+        std::unique_ptr<Button> newButtonPoint{ new Button(UserInput::PointType, mFontStorage.getFont(), "Point", 12.f, 100.f, false) };
+        std::unique_ptr<Button> newButtonLine { new Button(UserInput::LineType, mFontStorage.getFont(), "Line", 12.f, 170.f, false) };
 
         mButtons.push_back(std::move(newButtonMove));
         mButtons.push_back(std::move(newButtonPoint));
