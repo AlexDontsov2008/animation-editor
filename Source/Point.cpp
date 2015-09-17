@@ -48,7 +48,9 @@ namespace Editor
 
     sf::FloatRect Point::getRect() const
     {
-        return mPoint.getGlobalBounds();
+        constexpr float offset { 15.f };
+        sf::FloatRect rect = mPoint.getGlobalBounds();
+        return sf::FloatRect(rect.left - offset, rect.top - offset, rect.width + offset * 2.f, rect.height + offset * 2.f);
     }
 
     bool Point::getActive() const

@@ -26,12 +26,19 @@ namespace Editor
             float                       getAngle() const;
             float                       getLenght() const;
 
+            sf::Vector2f                getFirstPosition() const;
+            sf::Vector2f                getSecondPosition() const;
+
+            void                        setFirstPosition(const sf::Vector2f& firstPosition);
+            void                        setSecondPosition(const sf::Vector2f& secondPosition);
+
         protected:
             virtual void                draw(sf::RenderTarget& target, sf::RenderStates states) const override;
             virtual sf::FloatRect       getRect() const override;
 
         private:
             void                        init();
+            void                        EvalutionLineParametrs();
 
         private:
             sf::RectangleShape          mLine;

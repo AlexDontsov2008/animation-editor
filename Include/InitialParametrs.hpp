@@ -21,7 +21,8 @@ namespace Editor
     const sf::Color EnableColor(sf::Color::White);
 
     // Parametrs for our work area
-    constexpr static float workAreaPosX{ 75 }, workAreaPosY{ 30 }, workAreaWidth{ 1000 }, workAreaHeight{ 700 };
+    //static const sf::ContextSettings settings(24, 8, 16, 3, 0);
+    constexpr static float workAreaPosX{ 100 }, workAreaPosY{ 30 }, workAreaWidth{ 1000 }, workAreaHeight{ 700 };
     constexpr static float workAreaOffset{ 10 };
 
     // Parametrs for drawing elements.

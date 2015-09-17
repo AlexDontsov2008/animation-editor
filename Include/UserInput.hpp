@@ -18,9 +18,13 @@ namespace Editor
         public:
             enum InstrumentType
             {
+                SelectType,
                 MoveType,
                 PointType,
                 LineType,
+                AddFrameType,
+                DeleteFrameType,
+                ExitType,
             };
 
 
@@ -28,7 +32,8 @@ namespace Editor
                                 UserInput(sf::RenderWindow& window);
 
             // Major function for process events.
-            void                processEvents(WorkFlow& workFlow, std::vector<std::unique_ptr<Button>>& buttons);
+            void                processEvents(std::vector<std::unique_ptr<WorkFlow>>& workFlows,
+                                              std::vector<std::unique_ptr<Button>>& buttons, unsigned int& frameNumber);
 
             // Get and Set methods for Instrument type.
             InstrumentType      getInstrumentType() const;
@@ -37,14 +42,17 @@ namespace Editor
 
         private:
             // Function for process every Instrument
-            void                processMouseMoveInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement);
+            void                moveElements(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement);
+
+            void                processSelectInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement);
             void                processPointInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement);
             void                processLineInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement);
 
             // Major process function for instruments
-            void                processInstruments(WorkFlow& workFlow, SceneNode* activeElement);
+            void                processInstruments(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement);
 
-            void                processButtons(std::vector<std::unique_ptr<Button>>& buttons, sf::Event event);
+            void                processButtons(std::vector<std::unique_ptr<WorkFlow>>& workFlows,
+                                               std::vector<std::unique_ptr<Button>>& buttons, sf::Event event);
 
             // Check active elements
             SceneNode*          checkActiveElements(WorkFlow& workFlow, std::vector<std::unique_ptr<Button>>& buttons) const;

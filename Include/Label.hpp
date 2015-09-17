@@ -18,6 +18,7 @@ namespace Editor
 
             void                    setPosition(const sf::Vector2f& position);
             void                    setPosition(float posX, float posY);
+            sf::Vector2f            getPosition() const;
 
             void                    setStyle(unsigned int style);
 
@@ -27,6 +28,8 @@ namespace Editor
             // Check if Enable element
             virtual void            setEnable(bool isEnable) override;
             virtual bool            getEnable() const override;
+
+            void                    setColor(const sf::Color& color);
 
         protected:
             virtual void            draw(sf::RenderTarget& target, sf::RenderStates states) const override;

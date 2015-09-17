@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
 
 #include <WorkFlow.hpp>
 #include <UserInput.hpp>
@@ -43,9 +44,11 @@ namespace Editor
             // Font storage.
             FontStorage                             mFontStorage;
             // Work Area, where we draw our animation.
-            WorkFlow                                mWorkFlow;
+            std::vector<std::unique_ptr<WorkFlow>>  mWorkFlows;
             // Buttons for communication.
             std::vector<std::unique_ptr<Button>>    mButtons;
+            // Frames Counter.
+            sf::Text                                mFramesCounterText;
             // User Input.
             UserInput                               mInput;
             // Frame number.

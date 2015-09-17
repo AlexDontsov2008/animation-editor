@@ -29,6 +29,9 @@ namespace Editor
 
             virtual sf::FloatRect       getRect() const override;
 
+            void                        setLabelPosition(const sf::Vector2f& position);
+            sf::Vector2f                getLabelPosition() const;
+
 
         protected:
             virtual void                draw(sf::RenderTarget& target, sf::RenderStates states) const override;

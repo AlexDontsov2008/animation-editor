@@ -27,6 +27,7 @@ namespace Editor
 
     void Line::init()
     {
+        /*
         sf::Vector2f vecLhs{ mSecondPosition - mFirstPosition };
         sf::Vector2f vecRhs{};
 
@@ -67,7 +68,50 @@ namespace Editor
         mLine.setSize(sf::Vector2f(vectorLenght(vecLhs), LineThickness));
         mLine.setPosition(mFirstPosition);
         mLine.setRotation(angle + additAngle);
+        */
+        EvalutionLineParametrs();
         mLine.setFillColor(mColor);
+
+    }
+
+    void Line::EvalutionLineParametrs()
+    {
+        sf::Vector2f vecLhs{ mSecondPosition - mFirstPosition };
+        sf::Vector2f vecRhs{};
+
+        float additAngle{ 0.f };
+
+        if ((mFirstPosition.x > mSecondPosition.x &&  mFirstPosition.y < mSecondPosition.y) ||
+            (mFirstPosition.x < mSecondPosition.x &&  mFirstPosition.y > mSecondPosition.y))
+        {
+            if (mFirstPosition.y > mSecondPosition.y)
+                additAngle = rightAngle * 3.f;
+            else
+                additAngle = rightAngle;
+            vecRhs = sf::Vector2f{ 0, mSecondPosition.y - mFirstPosition.y };
+        }
+        else
+        {
+            if (mFirstPosition.x > mSecondPosition.x)
+                additAngle = rightAngle * 2.f;
+            vecRhs = sf::Vector2f{ mSecondPosition.x - mFirstPosition.x, 0 };
+        }
+
+        float angle{};
+
+        if (mFirstPosition.x == mSecondPosition.x)
+            if (mFirstPosition.y > mSecondPosition.y)
+                angle = -rightAngle;
+            else
+                angle = rightAngle;
+        else
+            angle = angleBetweenVectors(vecLhs, vecRhs);
+
+        mAngle = angle + additAngle;
+
+        mLine.setSize(sf::Vector2f(vectorLenght(vecLhs), LineThickness));
+        mLine.setPosition(mFirstPosition);
+        mLine.setRotation(angle + additAngle);
     }
 
     void Line::update(sf::Time dt)
@@ -131,5 +175,27 @@ namespace Editor
     bool Line::getEnable() const
     {
         return mIsEnable;
+    }
+
+    sf::Vector2f Line::getFirstPosition() const
+    {
+        return mFirstPosition;
+    }
+
+    sf::Vector2f Line::getSecondPosition() const
+    {
+        return mSecondPosition;
+    }
+
+    void Line::setFirstPosition(const sf::Vector2f& firstPosition)
+    {
+        mFirstPosition = firstPosition;
+        EvalutionLineParametrs();
+    }
+
+    void Line::setSecondPosition(const sf::Vector2f& secondPosition)
+    {
+        mSecondPosition = secondPosition;
+        EvalutionLineParametrs();
     }
 }

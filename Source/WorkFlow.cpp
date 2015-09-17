@@ -3,12 +3,14 @@
 #include <Line.hpp>
 #include <InitialParametrs.hpp>
 
+#include <iostream>
+
 namespace Editor
 {
     WorkFlow::WorkFlow(sf::RenderWindow& window)
     : mElements{}
     , mWindow(window)
-    , mWorkArea(workAreaWidth, workAreaHeight, workAreaPosX, workAreaPosY)
+    , mWorkArea(mWindow.getSize().x - 125.f, mWindow.getSize().y - 100.f, workAreaPosX, workAreaPosY)
     {}
 
     WorkFlow::~WorkFlow()
@@ -19,7 +21,9 @@ namespace Editor
         mWorkArea.update(dt);
 
         for (auto& element : mElements)
+        {
             element->update(dt);
+        }
     }
 
     void WorkFlow::draw() const

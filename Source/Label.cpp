@@ -98,6 +98,16 @@ namespace Editor
     {
         return mIsEnable;
     }
+
+    sf::Vector2f Label::getPosition() const
+    {
+        return mText.getPosition();
+    }
+
+    void Label::setColor(const sf::Color& color)
+    {
+        mColor = color;
+    }
 }
 
 

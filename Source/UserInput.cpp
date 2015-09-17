@@ -2,6 +2,7 @@
 #include <Utility.hpp>
 #include <InitialParametrs.hpp>
 #include <Point.hpp>
+#include <Line.hpp>
 
 #include <SFML/Window/Event.hpp>
 
@@ -15,12 +16,32 @@ namespace Editor
     {}
 
 
-    void UserInput::processEvents(WorkFlow& workFlow, std::vector<std::unique_ptr<Button>>& buttons)
+    void removeEnabledElements(WorkFlow& workFlow)
+    {
+        std::vector<std::unique_ptr<SceneNode>>& elements = workFlow.setElements();
+
+        auto result = elements.begin(), first = elements.begin();
+
+        while (first != elements.end())
+        {
+            if (!(*first)->getEnable())
+            {
+              *result = std::move(*first);
+              ++result;
+            }
+            ++first;
+        }
+        elements.erase(result, elements.end());
+    }
+
+    // Major function for process events.
+    void UserInput::processEvents(std::vector<std::unique_ptr<WorkFlow>>& workFlows, std::vector<std::unique_ptr<Button>>& buttons, unsigned int& frameNumber)
     {
         sf::Event event;
-        SceneNode* activeElement = checkActiveElements(workFlow, buttons);
-        //checkActiveElements(workFlow, buttons);
-        processMouseMoveInstrument(workFlow, sf::Mouse::getPosition(mWindow), activeElement);
+        SceneNode* activeElement = checkActiveElements(*workFlows[frameNumber], buttons);
+
+        if (mType == UserInput::MoveType)
+            moveElements(*workFlows[frameNumber], sf::Mouse::getPosition(mWindow), activeElement);
 
         while (mWindow.pollEvent(event))
         {
@@ -28,26 +49,68 @@ namespace Editor
                     mWindow.close();
             if (event.type == sf::Event::MouseButtonPressed && event.key.code == static_cast<unsigned int>(sf::Mouse::Left))
             {
-                if (isMousePositionInArea(sf::Mouse::getPosition(mWindow), workFlow.getRect(), true))
-                    processInstruments(workFlow, activeElement);
+                if (isMousePositionInArea(sf::Mouse::getPosition(mWindow), (*workFlows[frameNumber]).getRect(), true))
+                    processInstruments(*workFlows[frameNumber], sf::Mouse::getPosition(mWindow), activeElement);
                 else
-                    processButtons(buttons, event);
+                {
+                    processButtons(workFlows, buttons, event);
+                }
+            }
+            else if (event.type == sf::Event::KeyPressed && event.key.code == static_cast<unsigned int>(sf::Keyboard::Delete))
+            {
+                removeEnabledElements(*workFlows[frameNumber]);
+            }
+            else if (event.type == sf::Event::KeyPressed && event.key.code == static_cast<unsigned int>(sf::Keyboard::A))
+            {
+                if (frameNumber != 0)
+                    frameNumber -= 1;
+            }
+            else if (event.type == sf::Event::KeyPressed && event.key.code == static_cast<unsigned int>(sf::Keyboard::D))
+            {
+                if (frameNumber != workFlows.size() - 1)
+                    frameNumber += 1;
+            }
+        }
+    }
+
+    void UserInput::moveElements(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
+    {
+        if (activeElement != nullptr && activeElement->getNodeType() == SceneNode::Point)
+        {
+            Point* point = static_cast<Point*>(activeElement);
+            Line* line { nullptr };
+            std::vector<Line*> dependentLinesFirstPoint{}, dependentLinesSecondPoint{};
+
+            for (auto& element : workFlow.setElements())
+            {
+                if (element->getNodeType() == SceneNode::Line)
+                {
+                    line = static_cast<Line*>(element.get());
+
+                    if (line->getFirstPosition() == point->getPosition())
+                        dependentLinesFirstPoint.push_back(line);
+                    else if (line->getSecondPosition() == point->getPosition())
+                        dependentLinesSecondPoint.push_back(line);
+                }
+
+            }
+            if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+            {
+                point->setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
+                for (auto line : dependentLinesFirstPoint)
+                    line->setFirstPosition(point->getPosition());
+                for (auto line : dependentLinesSecondPoint)
+                    line->setSecondPosition(point->getPosition());
             }
         }
     }
 
 
     // Function for process every Instrument!!!!
-    void UserInput::processMouseMoveInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
+    void UserInput::processSelectInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
     {
-        if (activeElement != nullptr && activeElement->getNodeType() == SceneNode::Point)
-        {
-            if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-            {
-                Point* point = static_cast<Point*>(activeElement);
-                point->setPosition(sf::Vector2f(mousePosition.x, mousePosition.y));
-            }
-        }
+        if (activeElement != nullptr)
+            activeElement->setEnable(!activeElement->getEnable());
     }
 
     void UserInput::processPointInstrument(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
@@ -83,14 +146,15 @@ namespace Editor
 
     }
 
-    void UserInput::processInstruments(WorkFlow& workFlow, SceneNode* activeElement)
+
+    void UserInput::processInstruments(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
     {
         sf::Vector2i positionMouse = sf::Mouse::getPosition(mWindow);
 
         switch (mType)
         {
-            case MoveType:
-                //processMouseMoveInstrument(workFlow, positionMouse, activeElement);
+            case SelectType:
+                processSelectInstrument(workFlow, positionMouse, activeElement);
                 break;
 
             case PointType:
@@ -100,25 +164,52 @@ namespace Editor
             case LineType:
                 processLineInstrument(workFlow, positionMouse, activeElement);
                 break;
+
+            case MoveType:
+            case AddFrameType:
+            case DeleteFrameType:
+            case ExitType:
+                break;
         }
     }
 
-    void UserInput::processButtons(std::vector<std::unique_ptr<Button>>& buttons, sf::Event event)
+    void UserInput::processButtons(std::vector<std::unique_ptr<WorkFlow>>& workFlows,
+                                   std::vector<std::unique_ptr<Button>>& buttons, sf::Event event)
     {
         sf::Vector2i positionMouse = sf::Mouse::getPosition(mWindow);
         for (auto& button : buttons)
         {
             if (isMousePositionInArea(positionMouse, button->getRect(), false))
             {
-                for (auto& enableButton : buttons)
+                if (button->getAction() == AddFrameType)
                 {
-                    if (enableButton->getEnable() && enableButton == button)
-                        return;
-                    else
-                        enableButton->setEnable(false);
+                    std::unique_ptr<WorkFlow> newWorkFlow{ new WorkFlow(mWindow) };
+                    workFlows.push_back(std::move(newWorkFlow));
                 }
-                button->setEnable(true);
-                setInstrumentType(static_cast<InstrumentType>(button->getAction()));
+                else if (static_cast<InstrumentType>(button->getAction()) == DeleteFrameType)
+                {
+                    //Добавить проверку на то что текущий кадр - не удаляемый.
+                    if (workFlows.size() > 1)
+                        workFlows.erase(workFlows.end() - 1, workFlows.end());
+                }
+                else if (static_cast<InstrumentType>(button->getAction()) == ExitType)
+                {
+                    mWindow.close();
+                }
+                else
+                {
+                    for (auto& enableButton : buttons)
+                    {
+                        if (enableButton->getEnable() && enableButton == button)
+                            return;
+                        else
+                            enableButton->setEnable(false);
+                    }
+
+
+                    button->setEnable(true);
+                    setInstrumentType(static_cast<InstrumentType>(button->getAction()));
+                }
             }
         }
     }

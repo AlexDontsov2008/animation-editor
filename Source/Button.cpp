@@ -85,6 +85,16 @@ namespace Editor
     {
         return mBox.getRect();
     }
+
+    void Button::setLabelPosition(const sf::Vector2f& position)
+    {
+        mLabel.setPosition(position);
+    }
+
+    sf::Vector2f Button::getLabelPosition() const
+    {
+        return mLabel.getPosition();
+    }
 }
 
 
