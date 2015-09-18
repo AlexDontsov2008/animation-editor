@@ -71,4 +71,14 @@ namespace Editor
     {
         return mIsEnable;
     }
+
+    void Rectangle::setColor(const sf::Color& color)
+    {
+        mColor = color;
+    }
+
+    void Rectangle::setPosition(const sf::Vector2f& position)
+    {
+        mRectangle.setPosition(position);
+    }
 }

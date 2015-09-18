@@ -3,10 +3,12 @@
 #include <InitialParametrs.hpp>
 #include <Point.hpp>
 #include <Line.hpp>
+#include <InputWindow.hpp>
 
 #include <SFML/Window/Event.hpp>
 
 #include <iostream>
+#include <fstream>
 
 namespace Editor
 {
@@ -53,7 +55,7 @@ namespace Editor
                     processInstruments(*workFlows[frameNumber], sf::Mouse::getPosition(mWindow), activeElement);
                 else
                 {
-                    processButtons(workFlows, buttons, event);
+                    processButtons(workFlows, buttons, event, frameNumber);
                 }
             }
             else if (event.type == sf::Event::KeyPressed && event.key.code == static_cast<unsigned int>(sf::Keyboard::Delete))
@@ -69,6 +71,10 @@ namespace Editor
             {
                 if (frameNumber != workFlows.size() - 1)
                     frameNumber += 1;
+            }
+            else if (event.type == sf::Event::KeyPressed && event.key.code == static_cast<unsigned int>(sf::Keyboard::Escape))
+            {
+                mWindow.close();
             }
         }
     }
@@ -146,6 +152,104 @@ namespace Editor
 
     }
 
+    void UserInput::processAddFrame(std::vector<std::unique_ptr<WorkFlow>>& workFlows)
+    {
+        std::unique_ptr<WorkFlow> newWorkFlow{ new WorkFlow(mWindow) };
+        workFlows.push_back(std::move(newWorkFlow));
+    }
+
+    void UserInput::processDeleteFrame(std::vector<std::unique_ptr<WorkFlow>>& workFlows, unsigned int& frameNumber)
+    {
+        if (workFlows.size() > 1)
+        {
+            if (frameNumber == workFlows.size() - 1)
+                frameNumber -= 1;
+
+            workFlows.erase(workFlows.end() - 1, workFlows.end());
+        }
+    }
+
+    void UserInput::processLoadInstrument(std::vector<std::unique_ptr<WorkFlow>>& workFlows, unsigned int& frameNumber)
+    {
+        InputWindow loadWindow(InputWindow::LoadWindow, mWindow, "Load Window", "Input file name for load:");
+        loadWindow.run();
+
+        if (loadWindow.getFileName().size() == 0)
+            return;
+
+        std::ifstream loadFile(loadWindow.getFileName(), std::ios_base::in);
+
+        frameNumber = 0;
+        workFlows.erase(workFlows.begin(), workFlows.end());
+
+        unsigned int workFlowsSize{};
+        loadFile >> workFlowsSize;
+
+        for (unsigned int i = 0; i < workFlowsSize; ++i)
+        {
+            std::unique_ptr<WorkFlow> newWorkFlow { new WorkFlow(mWindow) };
+            workFlows.push_back(std::move(newWorkFlow));
+
+            unsigned int elementsSize{};
+            loadFile >> elementsSize;
+            for (unsigned int j = 0; j < elementsSize; ++j)
+            {
+                unsigned int elementType{};
+                loadFile >> elementType;
+
+                if (static_cast<SceneNode::NodeType>(elementType) == SceneNode::Point)
+                {
+                    sf::Vector2f position{};
+                    loadFile >> position.x >> position.y;
+                    workFlows[i]->addPoint(position);
+                }
+                else if (static_cast<SceneNode::NodeType>(elementType) == SceneNode::Line)
+                {
+                    sf::Vector2f firstPos{}, secondPos{};
+                    loadFile >> firstPos.x >> firstPos.y >> secondPos.x >> secondPos.y;
+                    workFlows[i]->addLine(firstPos, secondPos);
+                }
+            }
+        }
+    }
+
+    void UserInput::processSaveInstrument(const std::vector<std::unique_ptr<WorkFlow>>& workFlows) const
+    {
+        InputWindow saveWindow(InputWindow::SaveWindow, mWindow, "Save Window", "Input file name for save:");
+        saveWindow.run();
+
+        if (saveWindow.getFileName().size() == 0)
+            return;
+        std::ofstream saveFile(saveWindow.getFileName(), std::ios_base::out);
+
+        saveFile << workFlows.size() << '\n';
+
+        for (unsigned int i = 0; i < workFlows.size(); ++i)
+        {
+            saveFile << workFlows[i]->setElements().size() << ' ';
+
+            for (auto& element : workFlows[i]->setElements())
+            {
+                if (element->getNodeType() == SceneNode::Point)
+                {
+                    const Point* point { static_cast<const Point*>(element.get()) };
+                    saveFile << 1 << ' ';
+                    saveFile << point->getPosition().x << ' ' << point->getPosition().y << ' ';
+                }
+                else if (element->getNodeType() == SceneNode::Line)
+                {
+                    const Line* line { static_cast<const Line*>(element.get()) };
+                    saveFile << 2 << ' ';
+                    saveFile << line->getFirstPosition().x << ' ' << line->getFirstPosition().y << ' ';
+                    saveFile << line->getSecondPosition().x << ' ' << line->getSecondPosition().y << ' ';
+                }
+            }
+            saveFile << '\n';
+        }
+
+        saveFile.close();
+    }
+
 
     void UserInput::processInstruments(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
     {
@@ -168,29 +272,50 @@ namespace Editor
             case MoveType:
             case AddFrameType:
             case DeleteFrameType:
+            case LoadType:
+            case SaveType:
             case ExitType:
                 break;
         }
     }
 
     void UserInput::processButtons(std::vector<std::unique_ptr<WorkFlow>>& workFlows,
-                                   std::vector<std::unique_ptr<Button>>& buttons, sf::Event event)
+                                   std::vector<std::unique_ptr<Button>>& buttons, sf::Event event, unsigned int& frameNumber)
     {
         sf::Vector2i positionMouse = sf::Mouse::getPosition(mWindow);
         for (auto& button : buttons)
         {
             if (isMousePositionInArea(positionMouse, button->getRect(), false))
             {
-                if (button->getAction() == AddFrameType)
+                if (static_cast<InstrumentType>(button->getAction()) == AddFrameType)
                 {
-                    std::unique_ptr<WorkFlow> newWorkFlow{ new WorkFlow(mWindow) };
-                    workFlows.push_back(std::move(newWorkFlow));
+                    processAddFrame(workFlows);
                 }
                 else if (static_cast<InstrumentType>(button->getAction()) == DeleteFrameType)
                 {
-                    //Добавить проверку на то что текущий кадр - не удаляемый.
-                    if (workFlows.size() > 1)
-                        workFlows.erase(workFlows.end() - 1, workFlows.end());
+                    processDeleteFrame(workFlows, frameNumber);
+                }
+                else if (static_cast<InstrumentType>(button->getAction()) == LoadType)
+                {
+                    processLoadInstrument(workFlows, frameNumber);
+                    button->setActive(false);
+                    for (auto& button : buttons)
+                        if (button->getEnable())
+                        {
+                            setInstrumentType(static_cast<InstrumentType>(button->getAction()));
+                            break;
+                        }
+                }
+                else if (static_cast<InstrumentType>(button->getAction()) == SaveType)
+                {
+                    processSaveInstrument(workFlows);
+                    button->setActive(false);
+                    for (auto& button : buttons)
+                        if (button->getEnable())
+                        {
+                            setInstrumentType(static_cast<InstrumentType>(button->getAction()));
+                            break;
+                        }
                 }
                 else if (static_cast<InstrumentType>(button->getAction()) == ExitType)
                 {
@@ -205,7 +330,6 @@ namespace Editor
                         else
                             enableButton->setEnable(false);
                     }
-
 
                     button->setEnable(true);
                     setInstrumentType(static_cast<InstrumentType>(button->getAction()));

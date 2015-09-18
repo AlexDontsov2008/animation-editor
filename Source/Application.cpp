@@ -16,7 +16,7 @@ namespace Editor
     static const sf::ContextSettings settings(24, 8, 16, 3, 0);
 
     Application::Application()
-    : mWindow(sf::VideoMode(windowWidth, windowHeight), windowName, sf::Style::Fullscreen, settings)
+    : mWindow(sf::VideoMode(windowWidth, windowHeight), windowName, sf::Style::Close, settings)
     , mFontStorage { pathToFont }
     , mWorkFlows{}
     , mButtons {}
@@ -32,7 +32,7 @@ namespace Editor
         mFramesCounterText.setCharacterSize(20);
         mFramesCounterText.setColor(sf::Color::White);
         mFramesCounterText.setStyle(sf::Text::Bold);
-        mFramesCounterText.setPosition(workAreaPosX, mWindow.getSize().y - 65.f);
+        mFramesCounterText.setPosition(workAreaPosX, mWindow.getSize().y - offsetY);
         initButtons();
     }
 
@@ -46,7 +46,9 @@ namespace Editor
         std::unique_ptr<Button> newButtonLine { new Button(UserInput::LineType, mFontStorage.getFont(), "Line", offsetX, 30.f + 3.f * offsetY, false) };
         std::unique_ptr<Button> newButtonAddFrame { new Button(UserInput::AddFrameType, mFontStorage.getFont(), "  Add.  \nFrame", offsetX, 30.f + 4.f * offsetY, false) };
         std::unique_ptr<Button> newButtonDeleteFrame { new Button(UserInput::DeleteFrameType, mFontStorage.getFont(), "  Del.  \nFrame", offsetX, 30.f + 5.f * offsetY, false) };
-        std::unique_ptr<Button> newButtonExit { new Button(UserInput::ExitType, mFontStorage.getFont(), "Exit", offsetX, 30.f + 6.f * offsetY, false) };
+        std::unique_ptr<Button> newButtonLoad { new Button(UserInput::LoadType, mFontStorage.getFont(), "Load", offsetX, 30.f + 6.f * offsetY, false) };
+        std::unique_ptr<Button> newButtonSave { new Button(UserInput::SaveType, mFontStorage.getFont(), "Save", offsetX, 30.f + 7.f * offsetY, false) };
+        std::unique_ptr<Button> newButtonExit { new Button(UserInput::ExitType, mFontStorage.getFont(), "Exit", offsetX, 30.f + 8.f * offsetY, false) };
 
         constexpr float offset { 2.f };
 
@@ -67,6 +69,8 @@ namespace Editor
         mButtons.push_back(std::move(newButtonLine));
         mButtons.push_back(std::move(newButtonAddFrame));
         mButtons.push_back(std::move(newButtonDeleteFrame));
+        mButtons.push_back(std::move(newButtonLoad));
+        mButtons.push_back(std::move(newButtonSave));
         mButtons.push_back(std::move(newButtonExit));
     }
 

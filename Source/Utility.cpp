@@ -69,14 +69,21 @@ namespace Editor
     {
         float precisionLevel { 0.f };
 
-        if (lineLenght <= 150.f)
-            precisionLevel = 7.f;
+
+        if (lineLenght <= 80.f)
+            precisionLevel = 5.f;
+        else if (lineLenght > 80.f && lineLenght <= 150.f)
+            precisionLevel = 10.f;
         else if (lineLenght > 150.f && lineLenght <= 300.f)
-            precisionLevel = 12.f;
-        else if (lineLenght > 300.f && lineLenght <= 500.f)
-            precisionLevel = 16.f;
-        else if(lineLenght > 500.f)
-            precisionLevel = 21.f;
+            precisionLevel = 14.f;
+        else if (lineLenght > 300.f && lineLenght <= 450.f)
+            precisionLevel = 18.f;
+        else if (lineLenght > 450.f && lineLenght <= 600.f)
+            precisionLevel = 22.f;
+        else if (lineLenght > 600.f && lineLenght <= 750.f)
+            precisionLevel = 26.f;
+        else if(lineLenght > 750.f)
+            precisionLevel = 30.f;
 
         return precisionLevel;
     }
@@ -168,4 +175,16 @@ namespace Editor
                 return false;
         }
     }
+
+    void deleteCharacter(std::string& str)
+    {
+        if (str.size() > 0)
+        {
+            if (str[str.size() - 1] == '|')
+                str.erase(str.end() - 2);
+            else
+                str.erase(str.end() - 1);
+        }
+    }
+
 }

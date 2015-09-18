@@ -28,6 +28,9 @@ namespace Editor
             virtual void            setEnable(bool isEnable) override;
             virtual bool            getEnable() const override;
 
+            void                    setColor(const sf::Color& color);
+            void                    setPosition(const sf::Vector2f& position);
+
         protected:
             virtual void            draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 

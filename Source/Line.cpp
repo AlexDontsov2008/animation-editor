@@ -27,51 +27,8 @@ namespace Editor
 
     void Line::init()
     {
-        /*
-        sf::Vector2f vecLhs{ mSecondPosition - mFirstPosition };
-        sf::Vector2f vecRhs{};
-
-        float additAngle{ 0.f };
-
-        if ((mFirstPosition.x > mSecondPosition.x &&  mFirstPosition.y < mSecondPosition.y) ||
-            (mFirstPosition.x < mSecondPosition.x &&  mFirstPosition.y > mSecondPosition.y))
-        {
-            if (mFirstPosition.y > mSecondPosition.y)
-                additAngle = rightAngle * 3.f;
-            else
-                additAngle = rightAngle;
-            vecRhs = sf::Vector2f{ 0, mSecondPosition.y - mFirstPosition.y };
-        }
-        else
-        {
-            if (mFirstPosition.x > mSecondPosition.x)
-                additAngle = rightAngle * 2.f;
-            vecRhs = sf::Vector2f{ mSecondPosition.x - mFirstPosition.x, 0 };
-        }
-
-        float angle{};
-
-        if (mFirstPosition.x == mSecondPosition.x)
-            if (mFirstPosition.y > mSecondPosition.y)
-                angle = -rightAngle;
-            else
-                angle = rightAngle;
-        else
-            angle = angleBetweenVectors(vecLhs, vecRhs);
-
-        std::cout << "Angle: " << angle + additAngle << '\n';
-        std::cout << "firstPosition: " << mFirstPosition.x  << ", " << mFirstPosition.y << '\n';
-        std::cout << "secondPosition: " << mSecondPosition.x << ", " << mSecondPosition.y << '\n';
-        std::cout << "Line lenght: " << vectorLenght(mSecondPosition - mFirstPosition) << '\n';
-        mAngle = angle + additAngle;
-
-        mLine.setSize(sf::Vector2f(vectorLenght(vecLhs), LineThickness));
-        mLine.setPosition(mFirstPosition);
-        mLine.setRotation(angle + additAngle);
-        */
         EvalutionLineParametrs();
         mLine.setFillColor(mColor);
-
     }
 
     void Line::EvalutionLineParametrs()

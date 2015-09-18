@@ -8,7 +8,7 @@
 namespace Editor
 {
 
-    constexpr static float windowWidth{ 1100 }, windowHeight { 750 };
+    constexpr static float windowWidth{ 1300 }, windowHeight { 800 };
     const static std::string windowName { "AnimationEditor" };
     const static sf::Time dt{ sf::seconds(1.f / 60.f) };
     constexpr static float borderSize { 3.f };

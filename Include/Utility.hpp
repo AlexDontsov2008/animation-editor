@@ -42,6 +42,8 @@ namespace Editor
         stream << value;
         return stream.str();
     }
+
+    void deleteCharacter(std::string& str);
 }
 
 #endif // _UTILITY_HPP_
