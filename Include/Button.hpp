@@ -14,36 +14,29 @@ namespace Editor
                                                float posX, float posY, bool isEnable);
             virtual                     ~Button();
 
+            // Update Button.
             virtual void                update(sf::Time dt) override;
 
-            //  Return instrument Type.
+            //  Return Button Instrument Type.
             unsigned int                getAction() const;
 
-            // Check if +Active Element.
-            void                        setActive(bool isActive) override;
-            bool                        getActive() const override;
-
-            // Check if Enable element
-            virtual void                setEnable(bool isEnable) override;
-            virtual bool                getEnable() const override;
-
+            // Get Button Area.
             virtual sf::FloatRect       getRect() const override;
 
+            // Set & Get Label Position.
             void                        setLabelPosition(const sf::Vector2f& position);
             sf::Vector2f                getLabelPosition() const;
 
 
         protected:
+            // Draw Button.
             virtual void                draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-            // Get position and size of our drawing elements.
 
         private:
             Rectangle                       mBox;
             Label                           mLabel;
+            // Instrument Type.
             const unsigned int              mInstrumentType;
-
-            bool                            mIsActive;
-            bool                            mIsEnable;
     };
 }
 

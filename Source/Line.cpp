@@ -11,13 +11,12 @@
 namespace Editor
 {
     Line::Line(const sf::Vector2f& firstPos, const sf::Vector2f& secondPos)
-    : mLine()
-    , mFirstPosition(firstPos)
-    , mSecondPosition(secondPos)
-    , mColor(InactiveColor)
-    , mAngle(0.f)
-    , mIsActive(false)
-    , mIsEnable(false)
+    : SceneNode{}
+    , mLine{}
+    , mFirstPosition{ firstPos }
+    , mSecondPosition{ secondPos }
+    , mAngle{ 0.f }
+    , mColor{ InactiveColor }
     {
         init();
     }
@@ -25,12 +24,85 @@ namespace Editor
     Line::~Line()
     {}
 
+    // Update Line.
+    void Line::update(sf::Time dt)
+    {
+        if (SceneNode::getEnable())
+        {
+            mColor = EnableColor;
+        }
+        else
+        {
+            if (SceneNode::getActive())
+                mColor = ActiveColor;
+            else
+                mColor = InactiveColor;
+        }
+
+        mLine.setFillColor(mColor);
+    }
+
+    // Get Line Type.
+    SceneNode::NodeType Line::getNodeType() const
+    {
+        return SceneNode::Line;
+    }
+
+    // Get Angle & Lenght.
+    float Line::getAngle() const
+    {
+        return mAngle;
+    }
+
+    float Line::getLenght() const
+    {
+        return vectorLenght(mSecondPosition - mFirstPosition);
+    }
+
+    // Get First & Second Position.
+    sf::Vector2f Line::getFirstPosition() const
+    {
+        return mFirstPosition;
+    }
+
+    sf::Vector2f Line::getSecondPosition() const
+    {
+        return mSecondPosition;
+    }
+
+    // Set First & Second Position.
+    void Line::setFirstPosition(const sf::Vector2f& firstPosition)
+    {
+        mFirstPosition = firstPosition;
+        EvalutionLineParametrs();
+    }
+
+    void Line::setSecondPosition(const sf::Vector2f& secondPosition)
+    {
+        mSecondPosition = secondPosition;
+        EvalutionLineParametrs();
+    }
+
+    // Draw Line.
+    void Line::draw(sf::RenderTarget& target, sf::RenderStates states) const
+    {
+        target.draw(mLine, states);
+    }
+
+    // get Line Area.
+    sf::FloatRect Line::getRect() const
+    {
+        return mLine.getGlobalBounds();
+    }
+
+    // Helper initialization function.
     void Line::init()
     {
         EvalutionLineParametrs();
         mLine.setFillColor(mColor);
     }
 
+    // Evalution geometry parametrs.
     void Line::EvalutionLineParametrs()
     {
         sf::Vector2f vecLhs{ mSecondPosition - mFirstPosition };
@@ -64,6 +136,7 @@ namespace Editor
         else
             angle = angleBetweenVectors(vecLhs, vecRhs);
 
+        // Set Angle.
         mAngle = angle + additAngle;
 
         mLine.setSize(sf::Vector2f(vectorLenght(vecLhs), LineThickness));
@@ -71,88 +144,4 @@ namespace Editor
         mLine.setRotation(angle + additAngle);
     }
 
-    void Line::update(sf::Time dt)
-    {
-        if (mIsEnable)
-        {
-            mColor = EnableColor;
-        }
-        else
-        {
-            if (mIsActive)
-                mColor = ActiveColor;
-            else
-                mColor = InactiveColor;
-        }
-
-        mLine.setFillColor(mColor);
-    }
-
-    void Line::draw(sf::RenderTarget& target, sf::RenderStates states) const
-    {
-        target.draw(mLine, states);
-    }
-
-    sf::FloatRect Line::getRect() const
-    {
-        return mLine.getGlobalBounds();
-    }
-
-
-    bool Line::getActive() const
-    {
-        return mIsActive;
-    }
-
-    void Line::setActive(bool isActive)
-    {
-        mIsActive = isActive;
-    }
-
-    SceneNode::NodeType Line::getNodeType() const
-    {
-        return SceneNode::Line;
-    }
-
-    float Line::getAngle() const
-    {
-        return mAngle;
-    }
-
-    float Line::getLenght() const
-    {
-        return vectorLenght(mSecondPosition - mFirstPosition);
-    }
-
-    void Line::setEnable(bool isEnable)
-    {
-        mIsEnable = isEnable;
-    }
-
-    bool Line::getEnable() const
-    {
-        return mIsEnable;
-    }
-
-    sf::Vector2f Line::getFirstPosition() const
-    {
-        return mFirstPosition;
-    }
-
-    sf::Vector2f Line::getSecondPosition() const
-    {
-        return mSecondPosition;
-    }
-
-    void Line::setFirstPosition(const sf::Vector2f& firstPosition)
-    {
-        mFirstPosition = firstPosition;
-        EvalutionLineParametrs();
-    }
-
-    void Line::setSecondPosition(const sf::Vector2f& secondPosition)
-    {
-        mSecondPosition = secondPosition;
-        EvalutionLineParametrs();
-    }
 }

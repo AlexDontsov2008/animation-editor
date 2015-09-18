@@ -43,6 +43,7 @@ namespace Editor
         return stream.str();
     }
 
+    // Delete cursor from str.
     void deleteCharacter(std::string& str);
 }
 

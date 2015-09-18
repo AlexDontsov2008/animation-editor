@@ -16,6 +16,7 @@ namespace Editor
     WorkFlow::~WorkFlow()
     {}
 
+    // Update WorkFlow
     void WorkFlow::update(sf::Time dt)
     {
         mWorkArea.update(dt);
@@ -26,6 +27,7 @@ namespace Editor
         }
     }
 
+    // Draw WorkFlow
     void WorkFlow::draw() const
     {
         mWindow.draw(mWorkArea);
@@ -34,12 +36,13 @@ namespace Editor
             mWindow.draw(*element);
     }
 
+    // Get WorkFLow Area
     sf::FloatRect WorkFlow::getRect() const
     {
         return mWorkArea.getRect();
     }
 
-     // Functions for add the Points and the Lines on the WorkArea.
+     // Add Point & Line in WorkFlow
      void WorkFlow::addPoint(const sf::Vector2f& position)
      {
         std::unique_ptr<SceneNode> newPoint{ new Point(position.x, position.y) };
@@ -52,11 +55,13 @@ namespace Editor
         mElements.push_back(std::move(newLine));
      }
 
+     // Set Active.
      void WorkFlow::setActive(bool isActive)
      {
         mWorkArea.setActive(isActive);
      }
 
+     // Set element from reference on elements.
      std::vector<std::unique_ptr<SceneNode>>& WorkFlow::setElements()
      {
         return mElements;

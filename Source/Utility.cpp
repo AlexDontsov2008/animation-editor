@@ -48,12 +48,14 @@ namespace Editor
         return rad * 180.f / PI;
     }
 
+    // translate angles to radians.
     float angleToRad(const float angle)
     {
         constexpr float PI{ 3.1415926f };
         return angle * PI / 180.f;
     }
 
+    // Check is mouse in current Area
     bool isMousePositionInArea(const sf::Vector2i& mousePosition, const sf::FloatRect& workArea, bool isWorkArea)
     {
         if (isWorkArea)
@@ -176,6 +178,7 @@ namespace Editor
         }
     }
 
+    // Delete cursor from str.
     void deleteCharacter(std::string& str)
     {
         if (str.size() > 0)

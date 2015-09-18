@@ -19,30 +19,30 @@ namespace Editor
                                     Rectangle(float width, float height, float posX, float posY);
             virtual                 ~Rectangle();
 
+            // Update Rectangle.
             virtual void            update(sf::Time dt) override;
+            // Get Rectangle Area.
             virtual sf::FloatRect   getRect() const override;
 
-            virtual bool            getActive() const override;
-            virtual void            setActive(bool isActive) override;
-
-            virtual void            setEnable(bool isEnable) override;
-            virtual bool            getEnable() const override;
-
+            // Set Color & Position.
             void                    setColor(const sf::Color& color);
             void                    setPosition(const sf::Vector2f& position);
 
         protected:
+            // Draw Rectangle.
             virtual void            draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
         private:
+            // Helper initialization function.
             void                    init(float posX, float posY);
 
         private:
             sf::RectangleShape      mRectangle;
+            // Attributes.
             sf::Color               mColor;
 
-            bool                    mIsActive;
-            bool                    mIsEnable;
+            //bool                    mIsActive;
+            //bool                    mIsEnable;
     };
 }
 

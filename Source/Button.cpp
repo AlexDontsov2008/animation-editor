@@ -11,21 +11,21 @@ namespace Editor
 
     Button::Button(unsigned int instrumentType, const sf::Font& font, const std::string& label,
                    float posX, float posY, bool isEnable)
-    : mBox { buttonSize, buttonSize, posX, posY }
+    : SceneNode{}
+    , mBox { buttonSize, buttonSize, posX, posY }
     , mLabel { font, label, posX + 10.f, posY + 20.f }
     , mInstrumentType { instrumentType }
-    , mIsActive { false }
-    , mIsEnable { isEnable }
-    {}
+    {
+        SceneNode::setEnable(isEnable);
+    }
 
     Button::~Button()
     {}
 
+    // Update Button.
     void Button::update(sf::Time dt)
     {
-
-
-        if (mIsEnable)
+        if (SceneNode::getEnable())
         {
             mBox.setEnable(true);
             mLabel.setEnable(true);
@@ -34,7 +34,7 @@ namespace Editor
         {
             mBox.setEnable(false);
             mLabel.setEnable(false);
-            if (mIsActive)
+            if (SceneNode::getActive())
             {
                 mBox.setActive(true);
                 mLabel.setActive(true);
@@ -50,42 +50,26 @@ namespace Editor
         mLabel.update(dt);
     }
 
+    //  Return Button Instrument Type.
     unsigned int Button::getAction() const
     {
         return mInstrumentType;
     }
 
-    void Button::setActive(bool isActive)
+    // Get Button Area.
+    sf::FloatRect Button::getRect() const
     {
-        mIsActive = isActive;
+        return mBox.getRect();
     }
 
-    bool Button::getActive() const
-    {
-        return mIsActive;
-    }
-
-    void Button::setEnable(bool isEnable)
-    {
-        mIsEnable = isEnable;
-    }
-
-    bool Button::getEnable() const
-    {
-        return mIsEnable;
-    }
-
+    // Draw Button.
     void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
         target.draw(mBox, states);
         target.draw(mLabel, states);
     }
 
-    sf::FloatRect Button::getRect() const
-    {
-        return mBox.getRect();
-    }
-
+    // Set & Get Label Position.
     void Button::setLabelPosition(const sf::Vector2f& position)
     {
         mLabel.setPosition(position);
@@ -95,6 +79,7 @@ namespace Editor
     {
         return mLabel.getPosition();
     }
+
 }
 
 

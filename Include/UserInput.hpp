@@ -37,7 +37,7 @@ namespace Editor
             void                processEvents(std::vector<std::unique_ptr<WorkFlow>>& workFlows,
                                               std::vector<std::unique_ptr<Button>>& buttons, unsigned int& frameNumber);
 
-            // Get and Set methods for Instrument type.
+            // Get & Set methods for Instrument type.
             InstrumentType      getInstrumentType() const;
             void                setInstrumentType(InstrumentType type);
 

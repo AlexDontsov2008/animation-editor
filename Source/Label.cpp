@@ -8,10 +8,9 @@
 namespace Editor
 {
     Label::Label(const sf::Font& font, const std::string& text, float posX, float posY)
-    : mText{}
+    : SceneNode{}
+    , mText{}
     , mColor{ InactiveColor }
-    , mIsActive{ false }
-    , mIsEnable{ false }
     {
         initText(font, text, posX, posY);
     }
@@ -19,16 +18,17 @@ namespace Editor
     Label::~Label()
     {}
 
+    // Update for Label.
     void Label::update(sf::Time dt)
     {
-        if (mIsEnable)
+        if (SceneNode::getEnable())
         {
             mText.setStyle(sf::Text::Bold | sf::Text::Underlined);
             mColor = ActiveColor;
         }
         else
         {
-            if (mIsActive)
+            if (SceneNode::getActive())
                 mColor = ActiveColor;
             else
                 mColor = InactiveColor;
@@ -38,11 +38,8 @@ namespace Editor
         mText.setColor(mColor);
     }
 
-    void Label::setText(const std::string& text)
-    {
-        mText.setString(text);
-    }
 
+    // Set & Get Label Position.
     void Label::setPosition(const sf::Vector2f& position)
     {
         mText.setPosition(position);
@@ -53,16 +50,40 @@ namespace Editor
         mText.setPosition(posX, posY);
     }
 
+    sf::Vector2f Label::getPosition() const
+    {
+        return mText.getPosition();
+    }
+
+    // Set Text, Style, Color.
+    void Label::setText(const std::string& text)
+    {
+        mText.setString(text);
+    }
+
+    void Label::setStyle(unsigned int style)
+    {
+        mText.setStyle(style);
+    }
+
+    void Label::setColor(const sf::Color& color)
+    {
+        mColor = color;
+    }
+
+    // Draw Label.
     void Label::draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
         target.draw(mText, states);
     }
 
+    // Get position and size of our drawing elements.
     sf::FloatRect Label::getRect() const
     {
         return mText.getGlobalBounds();
     }
 
+    // Helper Initial function
     void Label::initText(const sf::Font& font, const std::string& text, float posX, float posY)
     {
         mText.setFont(font);
@@ -70,43 +91,6 @@ namespace Editor
         mText.setPosition(posX, posY);
         mText.setCharacterSize(characterSize);
         mText.setColor(mColor);
-    }
-
-
-    void Label::setStyle(unsigned int style)
-    {
-        mText.setStyle(style);
-    }
-
-    void Label::setActive(bool isActive)
-    {
-        mIsActive = isActive;
-    }
-
-    bool Label::getActive() const
-    {
-        return mIsActive;
-    }
-
-    // Check if Enable element
-    void Label::setEnable(bool isEnable)
-    {
-        mIsEnable = isEnable;
-    }
-
-    bool Label::getEnable() const
-    {
-        return mIsEnable;
-    }
-
-    sf::Vector2f Label::getPosition() const
-    {
-        return mText.getPosition();
-    }
-
-    void Label::setColor(const sf::Color& color)
-    {
-        mColor = color;
     }
 }
 

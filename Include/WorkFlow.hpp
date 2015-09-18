@@ -19,17 +19,21 @@ namespace Editor
                             WorkFlow(sf::RenderWindow& window);
                             ~WorkFlow();
 
+            // Update WorkFlow
             void            update(sf::Time dt);
+            // Draw WorkFlow
             void            draw() const;
+            // Get WorkFLow Area
             sf::FloatRect   getRect() const;
 
-            // Functions for add the Points and the Lines on the WorkArea.
+            // Add Point & Line in WorkFlow
             void            addPoint(const sf::Vector2f& position);
             void            addLine(const sf::Vector2f& firstPos, const sf::Vector2f& secondPos);
 
-            void            setBorderColor(const sf::Color& color);
+            // Set Active.
             void            setActive(bool isActive);
 
+            // Set element from reference on elements.
             std::vector<std::unique_ptr<SceneNode>>& setElements();
 
         private:

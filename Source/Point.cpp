@@ -15,30 +15,25 @@ namespace Editor
     {}
 
     Point::Point(float posX, float posY)
-    : mPoint(pointSize)
-    , mColor(ActiveColor)
-    , mIsActive(true)
-    , mIsEnable(false)
+    : SceneNode{}
+    , mPoint{ pointSize }
+    , mColor{ ActiveColor }
     {
         setCenterOrigin(mPoint);
         mPoint.setFillColor(mColor);
         mPoint.setPosition(posX, posY);
     }
 
-    void Point::draw(sf::RenderTarget& target, sf::RenderStates states) const
-    {
-        target.draw(mPoint, states);
-    }
-
+    // Update Point
     void Point::update(sf::Time dt)
     {
-        if (mIsEnable)
+        if (SceneNode::getEnable())
         {
             mColor = EnableColor;
         }
         else
         {
-            if (mIsActive)
+            if (SceneNode::getActive())
                 mColor = ActiveColor;
             else
                 mColor = InactiveColor;
@@ -46,6 +41,31 @@ namespace Editor
         mPoint.setFillColor(mColor);
     }
 
+    // Get Point Type.
+    SceneNode::NodeType Point::getNodeType() const
+    {
+        return SceneNode::Point;
+    }
+
+    // Get & Set Position
+    sf::Vector2f Point::getPosition() const
+    {
+        return mPoint.getPosition();
+    }
+
+    void Point::setPosition(const sf::Vector2f& position)
+    {
+        mPoint.setPosition(position);
+    }
+
+    // Draw Point.
+    void Point::draw(sf::RenderTarget& target, sf::RenderStates states) const
+    {
+        target.draw(mPoint, states);
+    }
+
+
+    // Get Point Area.
     sf::FloatRect Point::getRect() const
     {
         constexpr float offset { 15.f };
@@ -53,38 +73,4 @@ namespace Editor
         return sf::FloatRect(rect.left - offset, rect.top - offset, rect.width + offset * 2.f, rect.height + offset * 2.f);
     }
 
-    bool Point::getActive() const
-    {
-        return mIsActive;
-    }
-
-    void Point::setActive(bool isActive)
-    {
-        mIsActive = isActive;
-    }
-
-    SceneNode::NodeType Point::getNodeType() const
-    {
-        return SceneNode::Point;
-    }
-
-    void Point::setEnable(bool isEnable)
-    {
-        mIsEnable = isEnable;
-    }
-
-    bool Point::getEnable() const
-    {
-        return mIsEnable;
-    }
-
-     sf::Vector2f Point::getPosition() const
-     {
-        return mPoint.getPosition();
-     }
-
-     void Point::setPosition(const sf::Vector2f& position)
-     {
-        mPoint.setPosition(position);
-     }
 }

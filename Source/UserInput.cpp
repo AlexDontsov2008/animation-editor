@@ -17,7 +17,7 @@ namespace Editor
     , mType(MoveType)
     {}
 
-
+    // Remove Enabeld Elements from WorkFlow
     void removeEnabledElements(WorkFlow& workFlow)
     {
         std::vector<std::unique_ptr<SceneNode>>& elements = workFlow.setElements();
@@ -79,6 +79,20 @@ namespace Editor
         }
     }
 
+    // Get & Set methods for Instrument type.
+    UserInput::InstrumentType UserInput::getInstrumentType() const
+    {
+        return mType;
+    }
+
+    void UserInput::setInstrumentType(InstrumentType type)
+    {
+        mType = type;
+    }
+
+    // ================== Process Instruments ==================
+
+    // ================== Process Instruments above drawing entities ==================
     void UserInput::moveElements(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
     {
         if (activeElement != nullptr && activeElement->getNodeType() == SceneNode::Point)
@@ -152,6 +166,7 @@ namespace Editor
 
     }
 
+    // ================== Process Instruments above frames ==================
     void UserInput::processAddFrame(std::vector<std::unique_ptr<WorkFlow>>& workFlows)
     {
         std::unique_ptr<WorkFlow> newWorkFlow{ new WorkFlow(mWindow) };
@@ -169,6 +184,7 @@ namespace Editor
         }
     }
 
+     // ================== Process Instruments above files ==================
     void UserInput::processLoadInstrument(std::vector<std::unique_ptr<WorkFlow>>& workFlows, unsigned int& frameNumber)
     {
         InputWindow loadWindow(InputWindow::LoadWindow, mWindow, "Load Window", "Input file name for load:");
@@ -250,7 +266,7 @@ namespace Editor
         saveFile.close();
     }
 
-
+    // ================== Invoke Select, Point and Line instruments ==================
     void UserInput::processInstruments(WorkFlow& workFlow, sf::Vector2i mousePosition, SceneNode* activeElement)
     {
         sf::Vector2i positionMouse = sf::Mouse::getPosition(mWindow);
@@ -279,6 +295,7 @@ namespace Editor
         }
     }
 
+    // ================== Process Buttons, and Invoke all others instruments ==================
     void UserInput::processButtons(std::vector<std::unique_ptr<WorkFlow>>& workFlows,
                                    std::vector<std::unique_ptr<Button>>& buttons, sf::Event event, unsigned int& frameNumber)
     {
@@ -338,17 +355,8 @@ namespace Editor
         }
     }
 
-    // Get and Set methods for Instrument type.
-    UserInput::InstrumentType UserInput::getInstrumentType() const
-    {
-        return mType;
-    }
 
-    void UserInput::setInstrumentType(InstrumentType type)
-    {
-        mType = type;
-    }
-
+    // Check active elements
     SceneNode* UserInput::checkActiveElements(WorkFlow& workFlow, std::vector<std::unique_ptr<Button>>& buttons) const
     {
         if (isMousePositionInArea(sf::Mouse::getPosition(mWindow), workFlow.getRect(), true))

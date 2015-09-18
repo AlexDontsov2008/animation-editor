@@ -31,6 +31,7 @@ namespace Editor
 
     }
 
+    // Helper Init function.
     void InputWindow::init()
     {
         mInputField.setFillColor(boxColor);
@@ -56,6 +57,7 @@ namespace Editor
         mButtons.push_back(std::move(newButtonCancel));
     }
 
+    // Run Window.
     void InputWindow::run()
     {
         sf::Clock clock;
@@ -75,6 +77,13 @@ namespace Editor
         }
     }
 
+    // Get File Name.
+    const std::string& InputWindow::getFileName() const
+    {
+        return mFileNameStr;
+    }
+
+    // Update window.
     void InputWindow::update(sf::Time dt)
     {
         updateInputString(dt);
@@ -83,6 +92,7 @@ namespace Editor
             button->update(dt);
     }
 
+    // Draw window.
     void InputWindow::draw()
     {
         mWindow.clear(windowColor);
@@ -97,6 +107,7 @@ namespace Editor
     }
 
 
+    // Process All Events.
     void InputWindow::processEvents(sf::Time dt)
     {
         sf::Event event;
@@ -137,6 +148,7 @@ namespace Editor
         }
     }
 
+    // Process Buttons.
     void InputWindow::processButtons()
     {
         for (auto& button : mButtons)
@@ -155,6 +167,7 @@ namespace Editor
         }
     }
 
+    // Check Active Elements.
     void InputWindow::checkActiveElements()
     {
         for (auto& button : mButtons)
@@ -167,6 +180,7 @@ namespace Editor
         }
     }
 
+    // Update string.
     void InputWindow::updateInputString(sf::Time dt)
     {
         static float refreshTime{};
@@ -181,6 +195,7 @@ namespace Editor
         }
     }
 
+    // Process Cursor.
     void InputWindow::checkStringForCursor()
     {
         if (mFileNameStr.find('|') != std::string::npos)
@@ -190,6 +205,7 @@ namespace Editor
             mFileNameStr += '|';
     }
 
+    // Process OK Button.
     void InputWindow::processOkButton()
     {
         if (mFileNameStr.find('|') != std::string::npos)
@@ -214,9 +230,6 @@ namespace Editor
         }
     }
 
-    const std::string& InputWindow::getFileName() const
-    {
-        return mFileNameStr;
-    }
+
 
 }
