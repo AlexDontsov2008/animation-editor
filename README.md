@@ -1,4 +1,4 @@
 # AnimationEditor
-Simple 2d animation editor on SFML &amp; C++
-For building, run 'cmake ../' in Build directory.
+Simple 2d animation editor on SFML &amp; C++\n
+For building, run 'cmake ../' in Build directory.\n
 Run 'make' in the same directory.
