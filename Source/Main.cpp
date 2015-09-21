@@ -2,8 +2,10 @@
 
 #include <Application.hpp>
 
+
 int main()
 {
+
     try
     {
         Editor::Application app;

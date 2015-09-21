@@ -117,6 +117,7 @@ namespace Editor
         {
             if (event.type == sf::Event::Closed)
             {
+                mFileNameStr = "";
                 mWindow.close();
             }
             else if ((event.type == sf::Event::TextEntered))
@@ -143,6 +144,7 @@ namespace Editor
             }
             else if ((event.type == sf::Event::KeyPressed) && (event.key.code == sf::Keyboard::Escape))
             {
+                mFileNameStr = "";
                 mWindow.close();
             }
         }
@@ -213,8 +215,8 @@ namespace Editor
 
         if (mType == LoadWindow)
         {
-            if (mFileNameStr.find(".ani") == std::string::npos)
-                mFileNameStr += ".ani";
+            //if (mFileNameStr.find(".ani") == std::string::npos)
+                //mFileNameStr += ".ani";
             std::ifstream loadFile(mFileNameStr, std::ios_base::in);
             if ( loadFile.is_open())
                 mWindow.close();

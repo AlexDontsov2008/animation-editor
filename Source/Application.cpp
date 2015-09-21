@@ -16,7 +16,7 @@ namespace Editor
     static const sf::ContextSettings settings(24, 8, 16, 3, 0);
 
     Application::Application()
-    : mWindow(sf::VideoMode(windowWidth, windowHeight), windowName, sf::Style::Close, settings)
+    : mWindow(sf::VideoMode(windowWidth, windowHeight), windowName, sf::Style::Resize | sf::Style::Close, settings)
     , mFontStorage { pathToFont }
     , mWorkFlows{}
     , mButtons {}
